@@ -1,9 +1,15 @@
 from llm.model import llm
+from agents.plan_schema import DevelopmentPlan
+
+planner_llm = llm.with_structured_output(DevelopmentPlan)
 
 
 def planner_agent(state):
 
     requirement = state["user_requirement"]
+
+    # Checkpoint 1
+    state["status"] = "ANALYZING_REQUIREMENT"
 
     prompt = f"""
 You are the Planner Agent of an AI software development platform.
@@ -27,12 +33,22 @@ Do NOT write the actual code.
 Focus only on planning.
 """
 
-    response = llm.invoke(prompt)
+    # Checkpoint 2
+    state["status"] = "GENERATING_PLAN"
+    print("GENERATING_PLAN")
 
-    state["plan"] = {
-        "content": response.content
-    }
+    plan = planner_llm.invoke(prompt)
 
+    # Checkpoint 3
+    state["status"] = "FINALIZING_PLAN"
+    print("FINALIZING_PLAN")
+
+
+    state["plan"] = plan.model_dump()
+
+    # Checkpoint 4
     state["status"] = "PLANNED"
+    print("PLANNED")
+
 
     return state
