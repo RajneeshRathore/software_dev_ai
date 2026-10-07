@@ -13,3 +13,18 @@ frontend/.env.*
 !frontend/.env.example
 
 /docs/
+
+projects
+
+backend/coder_test.py
+backend/planner_test.py
+backend/test.py
+backend/test_file_tool.py
+backend/environment_test.py
+backend/runtime_test.py
+backend/dataRaj
+backend/instance
+backend/chroma_data
+
+
+

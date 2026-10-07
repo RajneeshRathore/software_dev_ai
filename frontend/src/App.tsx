@@ -1,13 +1,9 @@
-import Chat from "./components/chat/Chat"
-// import Home from "./components/Home"
+import IDE from "./components/ide/IDE"
 
 const App = () => {
   return (
-    // <div className="text-2xl font-bold underline">App</div>
-    // <Home />
-    <Chat />
+    <IDE />
   )
 }
-
 
 export default App

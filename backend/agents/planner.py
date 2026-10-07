@@ -1,5 +1,7 @@
 from llm.model import llm
 from agents.plan_schema import DevelopmentPlan
+from rag import store_plan, store_conversation
+
 
 planner_llm = llm.with_structured_output(DevelopmentPlan)
 
@@ -7,9 +9,15 @@ planner_llm = llm.with_structured_output(DevelopmentPlan)
 def planner_agent(state):
 
     requirement = state["user_requirement"]
+    project_id = state["project_id"]
 
-    # Checkpoint 1
-    state["status"] = "ANALYZING_REQUIREMENT"
+    # Store user requirement in conversation history
+    try:
+        store_conversation(project_id, "user", requirement)
+    except Exception as e:
+        print(f"Failed to store conversation: {e}")
+
+    print("GENERATING_PLAN")
 
     prompt = f"""
 You are the Planner Agent of an AI software development platform.
@@ -31,24 +39,25 @@ Create a development plan containing:
 Do NOT write the actual code.
 
 Focus only on planning.
+CRITICAL: When recommending technologies for React applications, always recommend Vite and React 18+. DO NOT recommend create-react-app (`react-scripts`) as it is deprecated.
 """
-
-    # Checkpoint 2
-    state["status"] = "GENERATING_PLAN"
-    print("GENERATING_PLAN")
 
     plan = planner_llm.invoke(prompt)
 
-    # Checkpoint 3
-    state["status"] = "FINALIZING_PLAN"
     print("FINALIZING_PLAN")
 
+    plan_dict = plan.model_dump()
 
-    state["plan"] = plan.model_dump()
+    # Store plan in RAG
+    try:
+        store_plan(project_id, plan_dict)
+    except Exception as e:
+        print(f"Failed to store plan: {e}")
 
-    # Checkpoint 4
-    state["status"] = "PLANNED"
     print("PLANNED")
 
-
-    return state
+    # Return ONLY the keys that changed (LangGraph best practice)
+    return {
+        "plan": plan_dict,
+        "status": "PLANNED",
+    }

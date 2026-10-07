@@ -1,5 +1,6 @@
 from agents.planner import planner_agent
 from agents.coder import coder_agent
+from tools.file_tools import (get_project_path,write_file,read_file,list_files)
 
 
 initial_state = {
@@ -58,18 +59,26 @@ final_state = coder_agent(
 )
 
 
-print("\n========== GENERATED FILES ==========\n")
+# print("\n========== GENERATED FILES ==========\n")
 
 
-for path, content in final_state["files"].items():
+# for path, content in final_state["files"].items():
 
-    print("\n-----------------------------------")
-    print("FILE:", path)
-    print("-----------------------------------")
+#     print("\n-----------------------------------")
+#     print("FILE:", path)
+#     print("-----------------------------------")
 
-    print(content)
+#     print(content)
 
 
-print("\n====================================\n")
+# print("\n====================================\n")
 
-print("Status:", final_state["status"])
+# print("Status:", final_state["status"])
+
+#Writing files
+
+for path,content in final_state['files'].items():
+
+    written_path = write_file(final_state['project_id'],path,content)
+
+    print("Created: ",written_path)
